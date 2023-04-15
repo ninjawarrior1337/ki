@@ -6,7 +6,7 @@ const dayStrings = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 const MoodTracker: React.FC = () => {
     const [selectedDate, setSelectedDate] = useState(new Date())
-    const [year, setYear] = useState(2022)
+    const [year, setYear] = useState(new Date().getUTCFullYear())
     const [modalOpen, setModalOpen] = useState(false)
 
     const getAllDaysThisYear = useMemo(() => {
