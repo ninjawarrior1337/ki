@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import MoodTracker from "../components/Tracker";
+import Image from "next/image"
 
 const Home: NextPage = () => {
   const session = useSession()
@@ -16,7 +17,7 @@ const Home: NextPage = () => {
                 <h2 className="text-5xl font-black text-gradient-treelar">元気？</h2>
                 <MoodTracker></MoodTracker>
                 <div className="absolute top-4 right-4 w-16 h-16 p-2 dropdown dropdown-end dropdown-hover">
-                  <img className="rounded-full" src={session.data?.user?.image || ""} />
+                  <Image width={200} height={200} alt="profile picture" className="rounded-full" src={session.data?.user?.image || ""} />
                   <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
                     <li onClick={() => signOut()} className="text-error"><a>Sign Out</a></li>
                   </ul>
