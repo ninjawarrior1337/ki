@@ -6,13 +6,19 @@ import { SessionProvider, SessionProviderProps } from "next-auth/react";
 import "../styles/globals.css";
 import Head from "next/head";
 import { AppProps } from "next/app";
+import { httpBatchLink } from "@trpc/client";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-function MyApp({Component, pageProps}: AppProps<{session: SessionProviderProps["session"]}>) {
+function MyApp({
+  Component,
+  pageProps,
+}: AppProps<{ session: SessionProviderProps["session"] }>) {
   return (
     <SessionProvider session={pageProps.session}>
       <Head>
         <title>元気 - Mood Tracker</title>
       </Head>
+      <ReactQueryDevtools initialIsOpen={false} />
       <Component {...pageProps} />
     </SessionProvider>
   );
@@ -26,19 +32,11 @@ const getBaseUrl = () => {
 
 export default withTRPC<AppRouter>({
   config() {
-    /**
-     * If you want to use SSR, you need to use the server's full URL
-     * @link https://trpc.io/docs/ssr
-     */
     const url = `${getBaseUrl()}/api/trpc`;
 
     return {
-      url,
+      links: [httpBatchLink({ url })],
       transformer: superjson,
-      /**
-       * @link https://react-query.tanstack.com/reference/QueryClient
-       */
-      // queryClientConfig: { defaultOptions: { queries: { staleTime: 60 } } },
     };
   },
   /**

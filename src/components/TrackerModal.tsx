@@ -1,41 +1,45 @@
 import { useForm } from "react-hook-form"
-import { inferMutationInput, trpc } from "../utils/trpc"
+import { RouterInput, trpc } from "../utils/trpc"
 
 type ModalProps = {
     onClose: () => void
     date: Date
 }
 
+type FormRepr = Omit<RouterInput["mt"]["createMoodTrackerEntry"], "date">
 
 const MoodTrackerInput: React.FC<ModalProps> = (props) => {
-    const trpcx = trpc.useContext()
-    const entryQuery = trpc.useQuery(["mt.getMoodTrackerEntry", {date: props.date}], {
-        refetchOnWindowFocus: false,
-        onSuccess(d) {
-            d?.date ? setValue("date", d.date) : setValue("date", props.date)
-            d?.content ? setValue("content", d.content) : setValue("content", "")
-            d?.feeling ? setValue("feeling", d.feeling) : setValue("feeling", "NEUTRAL")
+    const trpcx = trpc.useUtils()
+    const entryQuery = trpc.mt.getMoodTrackerEntry.useQuery({date: props.date}, {
+        refetchOnWindowFocus: false
+    })
+
+    const createEntry = trpc.mt.createMoodTrackerEntry.useMutation({
+        onSuccess() {
+            trpcx.mt.getMoodTrackerEntries.invalidate()
+            trpcx.mt.getMoodTrackerEntry.invalidate()
         }
     })
-    const createEntry = trpc.useMutation(["mt.createMoodTrackerEntry"], {
-        onSettled() {
-            trpcx.invalidateQueries(["mt.getMoodTrackerEntries"])
-            trpcx.invalidateQueries(["mt.getMoodTrackerEntry"])
-        }
-    })
-    const deleteEntry = trpc.useMutation(["mt.deleteMoodTrackerEntry"], {
-        onSettled() {
-            trpcx.invalidateQueries(["mt.getMoodTrackerEntries"])
-            trpcx.invalidateQueries(["mt.getMoodTrackerEntry"])
+    const deleteEntry = trpc.mt.deleteMoodTrackerEntry.useMutation({
+        onSuccess() {
+            trpcx.mt.getMoodTrackerEntries.invalidate()
+            trpcx.mt.getMoodTrackerEntry.invalidate()
         }
     })
 
-    const {register, handleSubmit, reset, setValue} = useForm<inferMutationInput<"mt.createMoodTrackerEntry">>()
+    const {register, handleSubmit, reset} = useForm<FormRepr>({
+        values: {
+            feeling: entryQuery.data?.feeling || 'NEUTRAL',
+            content: entryQuery.data?.content || ''
+        }
+    })
 
-    const onSubmit = async (data: inferMutationInput<"mt.createMoodTrackerEntry">) => {
-        console.log(data.date)
+    const onSubmit = async (data: FormRepr) => {
         try {
-            await createEntry.mutateAsync(data)
+            await createEntry.mutateAsync({
+                ...data,
+                date: props.date
+            })
             reset()
         } catch(e) {
             console.log(e)
@@ -55,7 +59,7 @@ const MoodTrackerInput: React.FC<ModalProps> = (props) => {
             <form className="flex flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
                 <span className="font-bold text-4xl p-2">{props.date.toLocaleDateString("default", {timeZone: "UTC"})}</span>
                 <label className="self-start">General sentiment</label>
-                <select {...register("feeling")} className="select select-primary" defaultValue={""}>
+                <select {...register("feeling")} className="select select-primary">
                     <option disabled value="">Select general sentiment of today</option>
                     <option value={"NEGATIVE"}>Negative</option>
                     <option value={"NEUTRAL"}>Neutral</option>

@@ -15,7 +15,7 @@ const Home: NextPage = () => {
               <>
                 <h1 className="text-2xl font-black">Mood Tracker</h1>
                 <h2 className="text-5xl font-black text-gradient-treelar">元気？</h2>
-                <MoodTracker></MoodTracker>
+                <MoodTracker/>
                 <div className="absolute top-4 right-4 w-16 h-16 p-2 dropdown dropdown-end dropdown-hover">
                   <Image width={200} height={200} alt="profile picture" className="rounded-full" src={session.data?.user?.image || ""} />
                   <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
