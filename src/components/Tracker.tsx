@@ -101,7 +101,7 @@ const DayEntry: React.FC<PropsWithChildren<DayEntryProps>> = ({
       {children}
       <div
         tabIndex={0}
-        className="menu dropdown-content rounded-box bg-base-100 p-2"
+        className="menu dropdown-content rounded-box bg-base-100 p-2 z-10"
       >
         {date.toLocaleDateString("default", { timeZone: "UTC" })}
       </div>
