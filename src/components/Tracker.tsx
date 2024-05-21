@@ -90,6 +90,7 @@ const DayEntry: React.FC<PropsWithChildren<DayEntryProps>> = ({
   return (
     <Link
       scroll={false}
+      prefetch={false}
       href={`/moodtracker/${date.getUTCFullYear()}/${date.valueOf()}`}
       className={`dropdown dropdown-top dropdown-hover cursor-pointer border ${isToday ? "border-info" : "border-gray-500"} h-4 w-4 rounded ${feelingColor}`}
     >
