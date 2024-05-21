@@ -3,8 +3,8 @@ import DiscordProvider from "next-auth/providers/discord";
 
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "../../../server/db/client";
-import { env } from "../../../env/server.mjs";
+import { prisma } from "~/server/db/client";
+import { env } from "~/env/server.mjs";
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
@@ -28,4 +28,6 @@ export const authOptions: NextAuthOptions = {
   ],
 };
 
-export default NextAuth(authOptions);
+const handler = NextAuth(authOptions)
+
+export {handler as GET, handler as POST}

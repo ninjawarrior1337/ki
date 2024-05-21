@@ -3,6 +3,12 @@ import * as trpc from "@trpc/server";
 import { protectedProcedure } from "./protected-router";
 import { router } from "./trpc";
 
+export const createMoodTrackerEntrySchema = z.object({
+  date: z.date(),
+  content: z.string(),
+  feeling: z.enum(["NEGATIVE", "POSITIVE", "NEUTRAL"]),
+});
+
 const mtProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   const userId = ctx.session.user.id;
   await ctx.prisma.moodTracker.upsert({
@@ -68,13 +74,7 @@ export const mtRouter = router({
       });
     }),
   createMoodTrackerEntry: mtProcedure
-    .input(
-      z.object({
-        date: z.date(),
-        content: z.string(),
-        feeling: z.enum(["NEGATIVE", "POSITIVE", "NEUTRAL"]),
-      }),
-    )
+    .input(createMoodTrackerEntrySchema)
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
       const mt = await ctx.prisma.moodTracker.findFirstOrThrow({

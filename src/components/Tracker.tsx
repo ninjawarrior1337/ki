@@ -1,61 +1,60 @@
-import { PropsWithChildren, useMemo, useState } from "react";
-import { RouterOutput, trpc } from "../utils/trpc";
-import { MoodTrackerModal } from "./TrackerModal";
+import { PropsWithChildren, Suspense, cache, useMemo } from "react";
+import { RouterOutput } from "../utils/trpc/shared";
+import { getServerApi } from "~/utils/trpc/server";
+import Link from "next/link";
 
 const dayStrings = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const MoodTracker: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [year, setYear] = useState(new Date().getUTCFullYear());
-  const [modalOpen, setModalOpen] = useState(false);
+const getAllDaysInYear = cache((year: number) => {
+  const date = new Date(Date.UTC(year, 0, 1));
+  const dates = [];
 
-  const allDaysThisYear = useMemo(() => {
-    const date = new Date(Date.UTC(year, 0, 1));
-    const dates = [];
+  while (date.getUTCFullYear() === year) {
+    dates.push(new Date(date));
+    date.setUTCDate(date.getUTCDate() + 1);
+  }
 
-    while (date.getUTCFullYear() === year) {
-      dates.push(new Date(date));
-      date.setUTCDate(date.getUTCDate() + 1);
-    }
+  return dates;
+});
 
-    return dates;
-  }, [year]);
+async function DayEntriesScaffold({ year }: { year: number }) {
+  return getAllDaysInYear(year).map((d) => (
+    <div
+      className="h-4 w-4 animate-pulse rounded border border-gray-600"
+      key={d.toDateString()}
+    ></div>
+  ));
+}
 
-  const { data: entryData, isLoading: entryDataLoading } =
-    trpc.mt.getMoodTrackerEntries.useQuery({ year });
+async function DayEntries({ year }: { year: number }) {
+  const serverApi = await getServerApi();
+  const entryData = await serverApi.mt.getMoodTrackerEntries({ year });
 
-  const openDayEntry = (d: Date) => {
-    setSelectedDate(d);
-    setModalOpen(true);
-  };
+  return getAllDaysInYear(year).map((d) => (
+    <DayEntry entryData={entryData} date={d} key={d.toDateString()}></DayEntry>
+  ));
+}
 
+async function MoodTracker({year}: { year: number }) {
   return (
     <>
       <div className="flex space-x-2 text-2xl font-bold">
-        <button onClick={() => setYear((y) => y - 1)}>-</button>
-        {entryDataLoading ? <img src="puff.svg" /> : <h2>{year}</h2>}
-        <button onClick={() => setYear((y) => y + 1)}>+</button>
+        <Link href={`${year - 1}`}>-</Link>
+        <h2>{year}</h2>
+        <Link href={`${year + 1}`}>+</Link>
       </div>
       <div className={"grid grid-flow-col grid-rows-7 gap-2"}>
-        {allDaysThisYear.slice(0, 7).map((d) => (
-          <span className="my-0 text-xs" key={d.getUTCDay()}>
-            {dayStrings[d.getUTCDay()]}
-          </span>
-        ))}
-        {allDaysThisYear.map((d) => (
-          <DayEntry
-            entryData={entryData}
-            onClick={() => openDayEntry(d)}
-            date={d}
-            key={d.toDateString()}
-          ></DayEntry>
-        ))}
+        {getAllDaysInYear(year)
+          .slice(0, 7)
+          .map((d) => (
+            <span className="my-0 text-xs" key={d.getUTCDay()}>
+              {dayStrings[d.getUTCDay()]}
+            </span>
+          ))}
+        <Suspense fallback={<DayEntriesScaffold year={year} />}>
+          <DayEntries year={year}></DayEntries>
+        </Suspense>
       </div>
-      <MoodTrackerModal
-        date={selectedDate}
-        onClose={() => setModalOpen(false)}
-        isOpen={modalOpen}
-      />
     </>
   );
 };
@@ -70,14 +69,14 @@ type DayEntryProps = {
 const DayEntry: React.FC<PropsWithChildren<DayEntryProps>> = ({
   children,
   date,
-  onClick,
+  // onClick,
   entryData,
 }) => {
   const isToday =
     date.toLocaleDateString("default", { timeZone: "UTC" }) ==
     new Date(Date.now()).toLocaleDateString();
 
-  const computeColor = useMemo(() => {
+  const feelingColor = useMemo(() => {
     for (const e of entryData || []) {
       if (e.date.getTime() == date.getTime()) {
         switch (e.feeling) {
@@ -94,18 +93,19 @@ const DayEntry: React.FC<PropsWithChildren<DayEntryProps>> = ({
   }, [entryData, date]);
 
   return (
-    <div
-      onClick={onClick}
-      className={`dropdown dropdown-top dropdown-hover cursor-pointer border ${isToday ? "border-info" : "border-gray-500"} h-4 w-4 rounded ${computeColor}`}
+    <Link
+      scroll={false}
+      href={`/moodtracker/${date.getUTCFullYear()}/${date.valueOf()}`}
+      className={`dropdown dropdown-top dropdown-hover cursor-pointer border ${isToday ? "border-info" : "border-gray-500"} h-4 w-4 rounded ${feelingColor}`}
     >
       {children}
       <div
         tabIndex={0}
-        className="menu dropdown-content rounded-box bg-base-100 p-2 z-10"
+        className="menu dropdown-content z-10 rounded-box bg-base-100 p-2"
       >
         {date.toLocaleDateString("default", { timeZone: "UTC" })}
       </div>
-    </div>
+    </Link>
   );
 };
 
