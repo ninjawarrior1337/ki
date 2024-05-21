@@ -4,7 +4,7 @@ import {
   Session,
   getServerSession,
 } from "next-auth";
-import { authOptions as nextAuthOptions } from "~/app/api/auth/[...nextauth]/route";
+import { authOptions as nextAuthOptions } from "~/utils/auth/options";
 import { prisma } from "../db/client";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 

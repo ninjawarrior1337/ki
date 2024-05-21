@@ -1,7 +1,7 @@
 import { getServerSession as gss } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { cache } from "react";
-import { authOptions } from "~/app/api/auth/[...nextauth]/route";
+import { authOptions } from "./options";
 
 export const getServerSession = async () => {
   const session = gss(authOptions);
