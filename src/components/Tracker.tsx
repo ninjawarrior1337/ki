@@ -38,11 +38,6 @@ async function DayEntries({ year }: { year: number }) {
 async function MoodTracker({year}: { year: number }) {
   return (
     <>
-      <div className="flex space-x-2 text-2xl font-bold">
-        <Link href={`${year - 1}`}>-</Link>
-        <h2>{year}</h2>
-        <Link href={`${year + 1}`}>+</Link>
-      </div>
       <div className={"grid grid-flow-col grid-rows-7 gap-2"}>
         {getAllDaysInYear(year)
           .slice(0, 7)
