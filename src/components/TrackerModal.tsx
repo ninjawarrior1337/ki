@@ -9,7 +9,6 @@ type ModalProps = {
   date: Date;
 };
 
-
 async function MoodTrackerForm({ date }: ModalProps) {
   const serverApi = await getServerApi();
   const entryData = (await serverApi.mt.getMoodTrackerEntry({
@@ -84,7 +83,7 @@ async function MoodTrackerForm({ date }: ModalProps) {
           className="textarea textarea-primary"
         ></textarea>
         <div className="flex flex-row items-center justify-evenly space-y-2">
-          <SubmitButton/>
+          <SubmitButton />
           <button
             formAction={deleteMoodTrackerEntry.bind(undefined, date)}
             className={`btn btn-error ${!("id" in entryData) && "btn-disabled"}`}
@@ -99,16 +98,14 @@ async function MoodTrackerForm({ date }: ModalProps) {
 
 export const MoodTrackerModal: React.FC<ModalProps> = ({ date }) => {
   return (
-    <div className={`modal modal-open`}>
-      <div className="modal-box relative flex flex-col items-center">
-        <Link
-          href="./"
-          className="btn btn-circle btn-error btn-sm absolute right-2 top-2"
-        >
-          x
-        </Link>
-        <MoodTrackerForm date={date} />
-      </div>
+    <div className="modal-box relative flex flex-col items-center">
+      <Link
+        href="./"
+        className="btn btn-circle btn-error btn-sm absolute right-2 top-2"
+      >
+        x
+      </Link>
+      <MoodTrackerForm date={date} />
     </div>
   );
 };

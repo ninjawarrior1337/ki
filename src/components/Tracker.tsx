@@ -1,30 +1,9 @@
-import { PropsWithChildren, Suspense, cache, useMemo } from "react";
-import { RouterOutput } from "../utils/trpc/shared";
-import { getServerApi } from "~/utils/trpc/server";
 import Link from "next/link";
-
-const dayStrings = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-const getAllDaysInYear = cache((year: number) => {
-  const date = new Date(Date.UTC(year, 0, 1));
-  const dates = [];
-
-  while (date.getUTCFullYear() === year) {
-    dates.push(new Date(date));
-    date.setUTCDate(date.getUTCDate() + 1);
-  }
-
-  return dates;
-});
-
-async function DayEntriesScaffold({ year }: { year: number }) {
-  return getAllDaysInYear(year).map((d) => (
-    <div
-      className="h-4 w-4 animate-pulse rounded border border-gray-600"
-      key={d.toDateString()}
-    ></div>
-  ));
-}
+import { PropsWithChildren, useMemo } from "react";
+import { getAllDaysInYear } from "~/app/utils/allDaysInYear";
+import { getServerApi } from "~/utils/trpc/server";
+import { RouterOutput } from "../utils/trpc/shared";
+import { DayNames } from "./DayNames";
 
 async function DayEntries({ year }: { year: number }) {
   const serverApi = await getServerApi();
@@ -35,24 +14,14 @@ async function DayEntries({ year }: { year: number }) {
   ));
 }
 
-async function MoodTracker({year}: { year: number }) {
+async function MoodTracker({ year }: { year: number }) {
   return (
     <>
-      <div className={"grid grid-flow-col grid-rows-7 gap-2"}>
-        {getAllDaysInYear(year)
-          .slice(0, 7)
-          .map((d) => (
-            <span className="my-0 text-xs" key={d.getUTCDay()}>
-              {dayStrings[d.getUTCDay()]}
-            </span>
-          ))}
-        <Suspense fallback={<DayEntriesScaffold year={year} />}>
-          <DayEntries year={year}></DayEntries>
-        </Suspense>
-      </div>
+      <DayNames year={year} />
+      <DayEntries year={year}></DayEntries>
     </>
   );
-};
+}
 
 type DayEntryProps = {
   children?: React.ReactNode;

@@ -1,13 +1,14 @@
-import React from "react";
-
-export default function Layout({children, edit}: {
-    children: React.ReactNode,
-    edit: React.ReactNode
+export default function Layout({
+  children,
+  edit,
+}: {
+  children: React.ReactElement;
+  edit: React.ReactElement;
 }) {
-    return (
-        <>
-            {edit}
-            {children}
-        </>
-    )
+  return (
+    <>
+      {edit}
+      {children}
+    </>
+  );
 }
