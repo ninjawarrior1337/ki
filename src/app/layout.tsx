@@ -12,7 +12,7 @@ const inter = Inter({
   variable: "--font-sans",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
         <SessionProvider>
-          <TRPCReactProvider headers={headers()}>
+          <TRPCReactProvider headers={await headers()}>
             <main className="hero min-h-screen bg-base-300">
               <div className="hero-content flex max-w-md flex-col text-center">
                 {children}

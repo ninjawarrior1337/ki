@@ -30,9 +30,7 @@ async function MoodTrackerForm({ date }: ModalProps) {
     });
 
     if (!validatedFields.success) {
-      return {
-        errors: validatedFields.error.flatten().fieldErrors,
-      };
+      return;
     }
 
     await serverApi.mt.createMoodTrackerEntry(validatedFields.data);

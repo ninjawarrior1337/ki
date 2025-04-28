@@ -1,3 +1,3 @@
-import Page from "./(tracker)/page"
+import Page from "./page"
 
 export default Page;
