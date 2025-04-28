@@ -2,16 +2,16 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    reactCompiler: true
+    reactCompiler: true,
   },
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "cdn.discordapp.com"
-      }
-    ]
-  }
-}
+        hostname: "cdn.discordapp.com",
+      },
+    ],
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

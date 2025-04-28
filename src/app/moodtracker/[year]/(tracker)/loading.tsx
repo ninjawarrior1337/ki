@@ -16,6 +16,7 @@ export function DayEntriesScaffold({ year }: { year: number }) {
 export default function Loading() {
   const { year } = useParams();
   const yearAsNumber = parseInt(year as string);
+
   return (
     <>
       <DayNames year={yearAsNumber} />
