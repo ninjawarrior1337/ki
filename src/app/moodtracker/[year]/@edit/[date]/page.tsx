@@ -1,11 +1,12 @@
 import { Suspense } from "react";
 import { MoodTrackerModal } from "~/components/TrackerModal";
 
-export default function Edit({
-  params: { date: dateStr },
+export default async function Edit({
+  params,
 }: {
-  params: { date: string };
+  params: Promise<{ date: string }>;
 }) {
+  const {date: dateStr} = await params
   const date = new Date(parseInt(dateStr));
   return (
     <div className="modal modal-open">
