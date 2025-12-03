@@ -4,11 +4,7 @@ export default async function Layout({
   children,
   edit,
   params
-}: {
-  children: React.ReactElement;
-  edit: React.ReactElement;
-  params: Promise<{year: string}>
-}) {
+}: LayoutProps<"/moodtracker/[year]">) {
   const {year} = await params
   const yearAsNumber = parseInt(year! as string);
 

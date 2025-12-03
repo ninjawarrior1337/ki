@@ -2,9 +2,7 @@ import MoodTracker from "~/components/Tracker";
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ year: string }>;
-}) {
+}: PageProps<"/moodtracker/[year]">) {
   const {year} = await params
   return {
     title: `Mood Tracker - ${year}`,

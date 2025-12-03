@@ -4,9 +4,7 @@ import SignOutButton from "./[year]/SignOutButton";
 
 export default async function Layout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: LayoutProps<'/moodtracker'>) {
   return (
     <>
       <h1 className="text-2xl font-black">Mood Tracker</h1>

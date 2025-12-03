@@ -20,9 +20,7 @@ const inter = localFont({
 
 export default async function RootLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: LayoutProps<"/">) {
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`} style={{fontFeatureSettings: `"tnum", "ss01", "ss04", "calt", "liga"`}}>
